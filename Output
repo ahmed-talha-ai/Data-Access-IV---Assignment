@@ -1,0 +1,155 @@
+═══════════════════════════════════════════════════
+   InvoiceSystem - EF Core Code First | Data IV
+═══════════════════════════════════════════════════
+
+? Seeding data...
+
+2026-03-30T20:58:47.1236706Z
+      Executed DbCommand (43ms) [Parameters=[@p0='Electronics' (Nullable = false) (Size = 100), @p1='Clothing' (Nullable = false) (Size = 100)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      MERGE [Categories] USING (
+      VALUES (@p0, 0),
+      (@p1, 1)) AS i ([Name], _Position) ON 1=0
+      WHEN NOT MATCHED THEN
+      INSERT ([Name])
+      VALUES (i.[Name])
+      OUTPUT INSERTED.[Id], INSERTED.[IsActive], i._Position;
+  ? Categories saved - Ids: 5, 6
+2026-03-30T20:58:47.1994259Z
+      Executed DbCommand (8ms) [Parameters=[@p0='5', @p1='Laptop Pro' (Nullable = false) (Size = 200), @p2='1500.00' (Precision = 18) (Scale = 2), @p3='5', @p4='SmartPhone X' (Nullable = false) (Size = 200), @p5='900.00' (Precision = 18) (Scale = 2), @p6='6', @p7='Cotton Shirt' (Nullable = false) (Size = 200), @p8='45.00' (Precision = 18) (Scale = 2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      MERGE [Products] USING (
+      VALUES (@p0, @p1, @p2, 0),
+      (@p3, @p4, @p5, 1),
+      (@p6, @p7, @p8, 2)) AS i ([CategoryId], [Name], [Price], _Position) ON 1=0
+      WHEN NOT MATCHED THEN
+      INSERT ([CategoryId], [Name], [Price])
+      VALUES (i.[CategoryId], i.[Name], i.[Price])
+      OUTPUT INSERTED.[Id], i._Position;
+  ? Products saved - Ids: 7, 8, 9
+2026-03-30T20:58:47.2199977Z
+      Executed DbCommand (7ms) [Parameters=[@p0='ahmed@example.com' (Nullable = false) (Size = 200), @p1='Ahmed Ali' (Nullable = false) (Size = 150), @p2='sara@example.com' (Nullable = false) (Size = 200), @p3='Sara Hassan' (Nullable = false) (Size = 150)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      MERGE [Customers] USING (
+      VALUES (@p0, @p1, 0),
+      (@p2, @p3, 1)) AS i ([Email], [Name], _Position) ON 1=0
+      WHEN NOT MATCHED THEN
+      INSERT ([Email], [Name])
+      VALUES (i.[Email], i.[Name])
+      OUTPUT INSERTED.[Id], i._Position;
+  ? Customers saved - Ids: 4, 5
+2026-03-30T20:58:47.2433453Z
+      Executed DbCommand (7ms) [Parameters=[@p0='Black' (Nullable = false) (Size = 50), @p1='4', @p2='220.5' (Precision = 10) (Scale = 2), @p3='White' (Nullable = false) (Size = 50), @p4='5', @p5='180.0' (Precision = 10) (Scale = 2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      MERGE [Cars] USING (
+      VALUES (@p0, @p1, @p2, 0),
+      (@p3, @p4, @p5, 1)) AS i ([Color], [CustomerId], [MaxSpeed], _Position) ON 1=0
+      WHEN NOT MATCHED THEN
+      INSERT ([Color], [CustomerId], [MaxSpeed])
+      VALUES (i.[Color], i.[CustomerId], i.[MaxSpeed])
+      OUTPUT INSERTED.[Id], i._Position;
+  ? Cars saved - Ids: 3, 4
+2026-03-30T20:58:47.2682490Z
+      Executed DbCommand (7ms) [Parameters=[@p0='4', @p1='2026-03-30T20:58:47.2465838Z', @p2='5', @p3='2026-03-30T20:58:47.2466859Z'], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      MERGE [Invoices] USING (
+      VALUES (@p0, @p1, 0),
+      (@p2, @p3, 1)) AS i ([CustomerId], [Date], _Position) ON 1=0
+      WHEN NOT MATCHED THEN
+      INSERT ([CustomerId], [Date])
+      VALUES (i.[CustomerId], i.[Date])
+      OUTPUT INSERTED.[Id], i._Position;
+  ? Invoices saved - Ids: 3, 4
+2026-03-30T20:58:47.2917186Z
+      Executed DbCommand (7ms) [Parameters=[@p0='3', @p1='7', @p2='1', @p3='1500.00' (Precision = 18) (Scale = 2), @p4='3', @p5='8', @p6='2', @p7='900.00' (Precision = 18) (Scale = 2), @p8='4', @p9='9', @p10='3', @p11='45.00' (Precision = 18) (Scale = 2), @p12='4', @p13='7', @p14='1', @p15='1480.00' (Precision = 18) (Scale = 2)], CommandType='Text', CommandTimeout='30']
+      SET IMPLICIT_TRANSACTIONS OFF;
+      SET NOCOUNT ON;
+      MERGE [InvoiceItems] USING (
+      VALUES (@p0, @p1, @p2, @p3, 0),
+      (@p4, @p5, @p6, @p7, 1),
+      (@p8, @p9, @p10, @p11, 2),
+      (@p12, @p13, @p14, @p15, 3)) AS i ([InvoiceId], [ProductId], [Qty], [UnitPrice], _Position) ON 1=0
+      WHEN NOT MATCHED THEN
+      INSERT ([InvoiceId], [ProductId], [Qty], [UnitPrice])
+      VALUES (i.[InvoiceId], i.[ProductId], i.[Qty], i.[UnitPrice])
+      OUTPUT INSERTED.[Id], i._Position;
+  ? InvoiceItems saved - 4 line items
+
+? Query 1 - Invoices with Customer, Items, and Products:
+  (Watch SQL printed by Console Query Logger below)
+
+2026-03-30T20:58:47.5702080Z
+      Executed DbCommand (10ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [i].[Id], [i].[CustomerId], [i].[Date], [c].[Id], [c].[Email], [c].[Name], [c0].[Id], [c0].[Color], [c0].[CustomerId], [c0].[MaxSpeed], [s].[Id], [s].[InvoiceId], [s].[ProductId], [s].[Qty], [s].[UnitPrice], [s].[Id0], [s].[CategoryId], [s].[Name], [s].[Price], [s].[Id1], [s].[IsActive], [s].[Name0]
+      FROM [Invoices] AS [i]
+      INNER JOIN [Customers] AS [c] ON [i].[CustomerId] = [c].[Id]
+      LEFT JOIN [Cars] AS [c0] ON [c].[Id] = [c0].[CustomerId]
+      LEFT JOIN (
+          SELECT [i0].[Id], [i0].[InvoiceId], [i0].[ProductId], [i0].[Qty], [i0].[UnitPrice], [p].[Id] AS [Id0], [p].[CategoryId], [p].[Name], [p].[Price], [c1].[Id] AS [Id1], [c1].[IsActive], [c1].[Name] AS [Name0]
+          FROM [InvoiceItems] AS [i0]
+          INNER JOIN [Products] AS [p] ON [i0].[ProductId] = [p].[Id]
+          INNER JOIN [Categories] AS [c1] ON [p].[CategoryId] = [c1].[Id]
+      ) AS [s] ON [i].[Id] = [s].[InvoiceId]
+      ORDER BY [i].[Id], [c].[Id], [c0].[Id], [s].[Id], [s].[Id0]
+
+  Invoice #3 | Date: 2026-03-30
+  Customer : Ahmed Ali (ahmed@example.com)
+  Car      : Black @ 220.5 km/h
+  Items    :
+    ␦ [Electronics] Laptop Pro x 1 @ $1,500.00
+    ␦ [Electronics] SmartPhone X x 2 @ $900.00
+  TOTAL    : $3,300.00
+
+  Invoice #4 | Date: 2026-03-30
+  Customer : Sara Hassan (sara@example.com)
+  Car      : White @ 180.0 km/h
+  Items    :
+    ␦ [Clothing] Cotton Shirt x 3 @ $45.00
+    ␦ [Electronics] Laptop Pro x 1 @ $1,480.00
+  TOTAL    : $1,615.00
+
+? Query 2 - Active Categories and their Products:
+
+2026-03-30T20:58:47.6093637Z
+      Executed DbCommand (2ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [c].[Id], [c].[IsActive], [c].[Name], [p].[Id], [p].[CategoryId], [p].[Name], [p].[Price]
+      FROM [Categories] AS [c]
+      LEFT JOIN [Products] AS [p] ON [c].[Id] = [p].[CategoryId]
+      WHERE [c].[IsActive] = CAST(1 AS bit)
+      ORDER BY [c].[Id]
+  [5] Electronics - 2 product(s)
+        Laptop Pro - $1,500.00
+        SmartPhone X - $900.00
+  [6] Clothing - 1 product(s)
+        Cotton Shirt - $45.00
+
+? Query 3 - Products sold on multiple invoices (N:M proof):
+
+2026-03-30T20:58:47.6694566Z
+      Executed DbCommand (6ms) [Parameters=[], CommandType='Text', CommandTimeout='30']
+      SELECT [p].[Id], [p].[CategoryId], [p].[Name], [p].[Price], [i1].[Id], [i1].[InvoiceId], [i1].[ProductId], [i1].[Qty], [i1].[UnitPrice]
+      FROM [Products] AS [p]
+      LEFT JOIN [InvoiceItems] AS [i1] ON [p].[Id] = [i1].[ProductId]
+      WHERE (
+          SELECT COUNT(*)
+          FROM (
+              SELECT DISTINCT [i].[InvoiceId]
+              FROM [InvoiceItems] AS [i]
+              WHERE [p].[Id] = [i].[ProductId]
+          ) AS [i0]) > 1
+      ORDER BY [p].[Id]
+  Laptop Pro appears on invoices: [3, 4]
+
+═══════════════════════════════════════════════════
+   All Done! Check console above for SQL logs.
+═══════════════════════════════════════════════════
+
+
+D:\DEPI-Round04\tasks\14 th task\InvoiceSystem\bin\Debug\net10.0\InvoiceSystem.exe (process 15032) exited with code 0 (0x0).
+To automatically close the console when debugging stops, enable Tools->Options->Debugging->Automatically close the console when debugging stops.
+Press any key to close this window . . .
